@@ -135,3 +135,77 @@ The protocol operates as follows:
 - Add metrics and monitoring support
 - Implement a client library for easier integration
 - Add Swagger/OpenAPI documentation for the API
+
+## Docker Deployment
+
+This project can be easily deployed using Docker and Docker Compose.
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Running with Docker Compose
+
+1. Build and start the container:
+
+```bash
+docker-compose up -d
+```
+
+2. Check the container status:
+
+```bash
+docker-compose ps
+```
+
+3. View logs:
+
+```bash
+docker-compose logs -f
+```
+
+4. Stop the service:
+
+```bash
+docker-compose down
+```
+
+### Running Multiple Nodes
+
+To run multiple nodes in a network, uncomment the second service in the `docker-compose.yml` file and adjust the configuration as needed. You can add more nodes by duplicating the service definition and adjusting ports and node IDs.
+
+Alternatively, use the provided multi-node configuration:
+
+```bash
+# Run a three-node network
+docker-compose -f docker-compose.multi-node.yml up -d
+
+# View logs for all nodes
+docker-compose -f docker-compose.multi-node.yml logs -f
+
+# View logs for a specific node
+docker-compose -f docker-compose.multi-node.yml logs -f avalanche-node-1
+
+# Stop the multi-node network
+docker-compose -f docker-compose.multi-node.yml down
+```
+
+This setup creates a network with three nodes where node-2 and node-3 connect to node-1, and node-3 also connects to node-2, forming a basic peer network.
+
+### Custom Configuration
+
+You can modify the `src/config.json` file to customize the node configuration. After changing the configuration, restart the containers:
+
+```bash
+docker-compose restart
+```
+
+### Building the Docker Image Manually
+
+If you want to build the Docker image manually:
+
+```bash
+docker build -t avalanche-consensus-service .
+docker run -p 8080:8080 avalanche-consensus-service
+```

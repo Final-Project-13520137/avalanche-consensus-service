@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  avalanche-consensus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avalanche-consensus-service
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ID=node-1
+      # You can override config values with environment variables if needed
+      # - SERVER_PORT=8080
+      # - PEER_ADDRESSES=http://peer1:8080,http://peer2:8080
+    volumes:
+      # For development, mount the source code
+      - ./src:/app/src
+      # Mount the config file to allow easy modifications
+      - ./src/config.json:/app/config.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - avalanche-network
+
+  # You can add more nodes for a multi-node setup
+  # avalanche-node-2:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: avalanche-node-2
+  #   ports:
+  #     - "8081:8080"
+  #   environment:
+  #     - NODE_ID=node-2
+  #   volumes:
+  #     - ./src:/app/src
+  #     - ./src/config.json:/app/node2-config.json
+  #   restart: unless-stopped
+  #   networks:
+  #     - avalanche-network
+      
+networks:
+  avalanche-network:
+    driver: bridge 

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  avalanche-node-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avalanche-node-1
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ID=node-1
+    volumes:
+      - ./src/config.json:/app/config.json
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - avalanche-network
+
+  avalanche-node-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avalanche-node-2
+    ports:
+      - "8081:8080"
+    environment:
+      - NODE_ID=node-2
+    volumes:
+      - ./configs/node2-config.json:/app/config.json
+    depends_on:
+      - avalanche-node-1
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - avalanche-network
+  
+  avalanche-node-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avalanche-node-3
+    ports:
+      - "8082:8080"
+    environment:
+      - NODE_ID=node-3
+    volumes:
+      - ./configs/node3-config.json:/app/config.json
+    depends_on:
+      - avalanche-node-1
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - avalanche-network
+      
+networks:
+  avalanche-network:
+    driver: bridge 
